@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# Regularaly check if this machines IP address that we're connecting to the
+# internet from has changed.
+
+IP=$(curl -s https://ip.maxcohn.org)
+
+echo "Current IP: $IP"
+
+while true
+do
+	NEW_IP=$(curl -s https://ip.maxcohn.org)
+
+	if [ $IP != $NEW_IP ]; then
+		echo $IP
+		echo $NEW_IP
+		
+		echo "IP changed."
+		exit
+	fi
+
+	sleep 15
+done
+

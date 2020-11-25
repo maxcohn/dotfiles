@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+# alias for youtube-dl with best quality
+youtube-dl -f best $@

@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Prints all links from href attributes to stdout
+
+#TODO: flags for relative vs absolute path
+
+get_absolute=0
+get_relative=0
+
+while getopts ":ar" opt; do
+	case ${opt} in
+		a )
+			get_absolute=1
+			;;
+		r )
+			get_relative=1
+			;;
+	esac
+done
+
+rg -o 'href=".*?"' | sed 's/href=//;s/"//g'

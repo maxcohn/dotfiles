@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Usage: album-dl [OPTIONS] PLAYLIST_URL
+#
+#	-a	Artist
+#	-A	Album
+#	-y	Year
+#
+
+print_usage() {
+	echo Usage: album-dl [OPTIONS] PLAYLIST_URL
+
+	echo '	-a	Artist'
+	echo '	-A	Album'
+	echo '	-y	Year'
+}
+
+
+artist=''
+album=''
+year=''
+
+while getopts ":a:A:y:" opt; do
+	case ${opt} in
+		a )
+			artist="$OPTARG"
+			;;
+		A )
+			album="$OPTARG"
+			;;
+		y )
+			year="$OPTARG"
+			;;
+	esac
+done
+
+shift $((OPTIND - 1))
+
+playlist="$1"
+
+[ -z "$playlist" ] && print_usage && exit 1
+
+
+# Download entire playlist and convert them to MP3
+youtube-dl \
+	-o "%(playlist_index)s - %(title)s.%(ext)s" \
+	-x --audio-format mp3 \
+	--yes-playlist \
+	-i \
+	"$playlist"
+
+for file in *.mp3; do
+	# Figure out if the title is in format 'Artist - Title' or 'Title'
+	if echo $file | grep -E '^[0-9]+ - ([a-zA-Z0-9()]* ?)+\.mp3'; then
+		# Extract title and track number
+		title="$(basename "$(echo $file | awk -F '-' '{gsub(/^ /,"",$2);print $2}')" '.mp3')"
+	else	
+		# Extract title and track number
+		title="$(basename "$(echo $file | awk -F '-' '{gsub(/^ /,"",$3);print $3}')" '.mp3')"
+	fi
+
+	# remove (official) or (official audio)
+	title="$(echo $title | sed 's/(official.*)//I')"
+
+	track="$(echo $file | awk -F '-' '{gsub(/ $/,"",$1);print $1}')"
+
+	# Add id3 metadata
+	id3v2 -t "$title" -T "$track" -a "$artist" -A "$album" -y "$year" "$file"
+done

@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+
+from datetime import datetime, timedelta
+import time
+import subprocess
+import os
+import sys
+import re
+
+JOURNAL_PATH = os.getenv('JOURNAL_PATH') #'/home/max/Code/journal'
+JOURNAL_EDITOR = os.getenv('JOURNAL_EDITOR') #'vim +'
+
+# get any subcommand that may have been entered
+subcommand = sys.argv[1] if len(sys.argv) >= 2 else ''
+
+now = datetime.now()
+journal_date = now.date()
+
+# if the hour is before 4am, open up the previous day's file.
+if now.hour <= 4:
+	journal_date = (now - timedelta(days=1)).date()
+
+filepath = f'{JOURNAL_PATH}/{journal_date.year}/{journal_date.isoformat()}.md'
+
+if subcommand == 'search':
+	# search for a paragraph within all journal entries that contains all of the given words
+
+	REMOVE_PUNC_RE = re.compile(r'[\.\n\t\(\)\[\]]')
+	def remove_punctuation(s: str):
+		return REMOVE_PUNC_RE.sub('', s)
+
+	query = set(sys.argv[2].split())
+	
+	# loop through all years
+	for year in range(2020, now.year +  1):
+		year_dir = f'{JOURNAL_PATH}/{year}/'
+		for entry in os.listdir(year_dir):
+			if not entry.endswith('.md'):
+				# if the file isn't a markdown file, it's not a journal entry, so skip it
+				continue
+			
+			# read the file and extract all the paragraphs. Paragraphs are separated by one or more empty lines
+			paragraphs = []
+			with open(f'{year_dir}{entry}', 'r') as f:
+				contents = f.read()
+				paragraphs = list(map(lambda s: s.replace('\n', ' '), re.split(r'\n\n+', contents)))
+			
+			# for each paragraph, if the given words all exist in the paragraph, print it
+			for par in paragraphs:
+				if query.issubset(set(map(remove_punctuation, par.split(' ')))):
+					print(entry)
+					print(par)
+
+	exit(0)
+elif subcommand == 'past':
+	
+	#TODO: 'past' subcommand
+	pass
+elif subcommand == 'finish':
+	# add, commit, and push new file
+	os.chdir(JOURNAL_PATH)
+	subprocess.run(['git', 'add', f'{journal_date.year}/{journal_date.isoformat()}.md'])
+	subprocess.run(['git', 'commit', '-m', f'{journal_date.isoformat()}'])
+	subprocess.run(['git', 'push'])
+
+	exit(0)
+elif subcommand != '':
+    print(f'Subcommand "{subcommand}" is invalid.')
+    exit(0)
+
+if not os.path.exists(filepath):
+	# create the new journal
+	with open(filepath, 'a') as f:
+		f.write(f"# {journal_date.strftime('%B %d, %Y')}\n\n\n")
+
+# open the editor on the current journal file
+subprocess.run(JOURNAL_EDITOR.split() + [filepath])

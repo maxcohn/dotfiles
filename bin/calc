@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Spin up a python interpreter without all the stderr printing to use as a
+# basic REPL calculator
+python3 -i -c 'from math import *' 2> /dev/null

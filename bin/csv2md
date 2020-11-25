@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+#
+# Given a CSV table from stdin, print a markdown table based on it to stdout
+
+import fileinput, sys, csv
+
+reader = csv.reader(sys.stdin)
+header = next(reader)
+
+lines = []
+max_lens = [len(s) for s in header]
+for line in reader:
+    for i, r in enumerate(line):
+        if len(r) > max_lens[i]:
+            max_lens[i] = len(r)
+    lines.append(line)
+
+header_break = ''
+for i, r in enumerate(header):
+    print(f'| {r}{" " * (max_lens[i] - len(r) + 1)}', end='')
+    header_break += f'|{"-" * (max_lens[i] + 2)}'
+print('|')
+print(header_break + '|')
+
+for line in lines:
+    for i, r in enumerate(line):
+        print(f'| {r}{" " * (max_lens[i] - len(r) + 1)}', end='')
+    print('|')

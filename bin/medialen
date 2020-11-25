@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+#
+# Calculate total length (in hours) of all media passed in
+#
+# Usage: medialen <FILES>
+#
+from multiprocessing import Pool, Value
+import sys, subprocess
+
+def get_length(filename):
+    result = subprocess.run([
+        "ffprobe", "-v", "error", "-show_entries",
+        "format=duration", "-of",
+        "default=noprint_wrappers=1:nokey=1", filename],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+    )
+    
+    try:
+        return float(result.stdout)
+    except:
+        print(f'Failed to probe {filename}', file=sys.stderr)
+        return 0
+
+formats = ("mkv", "avi", "mp4", "mp3")
+
+# get all files from the user input that are of the specified extensions
+all_files_iter = filter(lambda f: f[-3:] in formats, sys.argv[1:])
+
+with Pool(10) as p:
+    print(f'{sum(p.map(get_length, all_files_iter)) / 60 / 60:.2f}')
+

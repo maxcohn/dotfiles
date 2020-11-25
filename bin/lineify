@@ -1,0 +1,16 @@
+#!/usr/bin/awk -f
+#
+# Convert pargraphs separated by a blank line into single lines
+
+/^$/ {
+	print "\n"
+}
+
+/./ {
+	printf("%s ", $0);
+}
+
+END {
+	print ""
+}
+

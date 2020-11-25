@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Prints the total commits in the given repo
+#
+# total-commits [path]
+#
+#	path - Path to repo to run on
+
+dir="$1"
+
+[ -z $DIR ] && dir="$PWD"
+
+git -C "$dir" log 2> /dev/null | grep 'Author:' | wc -l
