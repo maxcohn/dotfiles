@@ -47,3 +47,6 @@ hash -d class="$HOME/Code/Fall2020"
 # Load aliases
 source ~/.zaliases
 
+
+
+export PATH="$HOME/.poetry/bin:$PATH"

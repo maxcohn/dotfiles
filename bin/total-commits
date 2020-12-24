@@ -8,6 +8,6 @@
 
 dir="$1"
 
-[ -z $DIR ] && dir="$PWD"
+[ -z "$DIR" ] && dir="$PWD"
 
-git -C "$dir" log 2> /dev/null | grep 'Author:' | wc -l
+git -C "$dir" log 2> /dev/null | grep -c 'Author:'

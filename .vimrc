@@ -77,14 +77,12 @@ Plug 'scrooloose/nerdtree', {'on':'NERDTreeToggle'}
 
 "" Language support
 
+Plug 'ycm-core/YouCompleteMe'
+
 "" Tex
 Plug 'lervag/vimtex'
 
-" Golang
-"Plug 'fatih/vim-go', {'do':':GoUpdateBinaries'}
 
-" Rust
-Plug 'rust-lang/rust.vim'
 
 " CSV
 Plug 'chrisbra/csv.vim'

@@ -2,4 +2,4 @@
 #
 # Call YouTube-dl on the url, and always convert to an mp3
 
-youtube-dl -x --audio-format mp3 $@ 
+youtube-dl -x --audio-format mp3 "$@"
