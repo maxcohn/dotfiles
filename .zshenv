@@ -20,3 +20,5 @@ export JOURNAL_EDITOR="vim +"
 
 # Make tmux colors work properly
 export TERM=xterm-256color
+
+export NVM_DIR="$HOME/.nvm"

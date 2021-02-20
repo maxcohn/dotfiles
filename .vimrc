@@ -89,11 +89,14 @@ Plug 'chrisbra/csv.vim'
 
 call plug#end()
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " File type specific
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Python
 "autocmd Filetype python setlocal tabstop=4
+
+let g:ycm_filetype_blacklist = { 'sql': 1, 'markdown': 1 }
 
 let g:tex_flavor = 'latex'
 
